@@ -1,129 +1,96 @@
-import {Suspense} from 'react';
-import {Await, NavLink} from '@remix-run/react';
-import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import {NavLink} from '@remix-run/react';
+import {HeaderQuery} from 'storefrontapi.generated';
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaTwitter,
+  FaLinkedinIn,
+} from 'react-icons/fa';
 
 interface FooterProps {
-  footer: Promise<FooterQuery | null>;
   header: HeaderQuery;
-  publicStoreDomain: string;
 }
 
-export function Footer({
-  footer: footerPromise,
-  header,
-  publicStoreDomain,
-}: FooterProps) {
+export const Footer: React.FC<FooterProps> = ({header}) => {
+  const {menu} = header;
+  const menuItems = Array.isArray(menu?.items) ? menu.items : [];
+
   return (
-    <Suspense>
-      <Await resolve={footerPromise}>
-        {(footer) => (
-          <footer className="footer">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
-          </footer>
-        )}
-      </Await>
-    </Suspense>
-  );
-}
+    <footer className="bg-gray-900 text-white py-12 px-6">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        {/* Company Branding */}
+        <div className="flex flex-col items-start space-y-6">
+          <h1 className="text-4xl font-extrabold text-blue-400">
+            Fabric Elite
+          </h1>
+          {/* <p className="text-gray-400">Your trusted fabric specialists.</p> */}
+        </div>
 
-function FooterMenu({
-  menu,
-  primaryDomainUrl,
-  publicStoreDomain,
-}: {
-  menu: FooterQuery['menu'];
-  primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url'];
-  publicStoreDomain: string;
-}) {
-  return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
-        if (!item.url) return null;
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        const isExternal = !url.startsWith('/');
-        return isExternal ? (
-          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
-            {item.title}
-          </a>
-        ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
-        );
-      })}
-    </nav>
-  );
-}
+        {/* Contact Info */}
+        <div className="flex flex-col space-y-6">
+          <h3 className="text-xl font-semibold text-blue-400">Contact Us</h3>
+          <p className="text-gray-400">
+            <strong>Address:</strong> 123 Main Street, Suite 400, City, Country
+          </p>
+          <p className="text-gray-400">
+            <strong>Phone:</strong> (123) 456-7890
+          </p>
+        </div>
 
-const FALLBACK_FOOTER_MENU = {
-  id: 'gid://shopify/Menu/199655620664',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461633060920',
-      resourceId: 'gid://shopify/ShopPolicy/23358046264',
-      tags: [],
-      title: 'Privacy Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/privacy-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633093688',
-      resourceId: 'gid://shopify/ShopPolicy/23358013496',
-      tags: [],
-      title: 'Refund Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/refund-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633126456',
-      resourceId: 'gid://shopify/ShopPolicy/23358111800',
-      tags: [],
-      title: 'Shipping Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/shipping-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633159224',
-      resourceId: 'gid://shopify/ShopPolicy/23358079032',
-      tags: [],
-      title: 'Terms of Service',
-      type: 'SHOP_POLICY',
-      url: '/policies/terms-of-service',
-      items: [],
-    },
-  ],
+        {/* Quick Links and Social Media */}
+        <div className="flex flex-col row items-center md:items-start space-y-6">
+          <div>
+            <h3 className="text-xl font-semibold text-blue-400 mb-4">
+              Quick Links
+            </h3>
+            <ul className="space-y-2 text-gray-400 hover:text-blue-400">
+              {menuItems.map((item: any) => {
+                const url = new URL(item.url).pathname;
+                return (
+                  <li key={item.id}>
+                    <NavLink
+                      to={url}
+                      className="text-gray-400 hover:text-blue-400"
+                      prefetch="intent"
+                    >
+                      {item.title}
+                    </NavLink>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+        <div className="flex flex-col row items-center md:items-start space-y-6">
+          {/* Social Media Icons */}
+          <h3 className="text-xl font-semibold text-blue-400 mb-1">
+            Social Media
+          </h3>
+          <div className="flex items-center space-x-2">
+            <FaFacebookF className="text-gray-400 hover:text-blue-400" />
+            <span className="text-gray-400 hover:text-blue-400">Facebook</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <FaInstagram className="text-gray-400 hover:text-blue-400" />
+            <span className="text-gray-400 hover:text-blue-400">Instagram</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <FaTwitter className="text-gray-400 hover:text-blue-400" />
+            <span className="text-gray-400 hover:text-blue-400">Twitter</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <FaLinkedinIn className="text-gray-400 hover:text-blue-400" />
+            <span className="text-gray-400 hover:text-blue-400">LinkedIn</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer Bottom */}
+      <div className="mt-8 border-t border-gray-600 pt-4 text-center">
+        <p className="text-gray-400 text-sm">
+          &copy; {new Date().getFullYear()} Fabric Elite. All rights reserved.
+        </p>
+      </div>
+    </footer>
+  );
 };
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
-  };
-}

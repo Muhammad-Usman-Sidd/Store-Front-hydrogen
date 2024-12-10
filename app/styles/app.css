@@ -190,6 +190,9 @@ button.reset:hover:not(:has(> *)) {
   grid-gap: 1rem;
   margin-left: auto;
 }
+.header strong {
+  font-size: 30px;
+}
 
 /*
 * --------------------------------------------------

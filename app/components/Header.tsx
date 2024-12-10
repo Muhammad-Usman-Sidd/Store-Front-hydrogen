@@ -7,6 +7,12 @@ import {
 } from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
+import {
+  FaInstagram,
+  FaLinkedin,
+  FaSearch,
+  FaShoppingCart,
+} from 'react-icons/fa';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -25,18 +31,59 @@ export function Header({
 }: HeaderProps) {
   const {shop, menu} = header;
   return (
-    <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
-      </NavLink>
-      <HeaderMenu
-        menu={menu}
-        viewport="desktop"
-        primaryDomainUrl={header.shop.primaryDomain.url}
-        publicStoreDomain={publicStoreDomain}
-      />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
-    </header>
+    <>
+      <header className="flex justify-between items-center px-6 py-4 border-b bg-white">
+        {/* Left Section - Social Icons */}
+        <div className="flex space-x-4">
+          <NavLink
+            to="#"
+            aria-label="Instagram"
+            className="text-gray-600 hover:text-black"
+          >
+            <FaInstagram size={20} />
+          </NavLink>
+          <NavLink
+            to="#"
+            aria-label="LinkedIn"
+            className="text-gray-600 hover:text-black"
+          >
+            <FaLinkedin size={20} />
+          </NavLink>
+        </div>
+
+        <nav className="flex flex-col items-center space-y-2">
+          {/* Brand Name */}
+          <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
+            <strong className="text-xl">FabricElite</strong>
+          </NavLink>
+
+          {/* Menu Section */}
+          <div className="headerflex justify-center items-center w-full">
+            <HeaderMenu
+              menu={menu}
+              viewport="desktop"
+              primaryDomainUrl={header.shop.primaryDomain.url}
+              publicStoreDomain={publicStoreDomain}
+            />
+          </div>
+
+          {/* Call-to-Actions (optional if needed) */}
+          <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+        </nav>
+
+        <div className="flex space-x-4 items-center">
+          <button
+            aria-label="Search"
+            className="text-gray-600 hover:text-black"
+          >
+            <SearchToggle />
+          </button>
+          <button aria-label="Cart" className="text-gray-600 hover:text-black">
+            <CartToggle cart={cart} />
+          </button>
+        </div>
+      </header>
+    </>
   );
 }
 
@@ -55,7 +102,10 @@ export function HeaderMenu({
   const {close} = useAside();
 
   return (
-    <nav className={className} role="navigation">
+    <nav
+      className={`${className} flex justify-center items-center`}
+      role="navigation"
+    >
       {viewport === 'mobile' && (
         <NavLink
           end
@@ -79,7 +129,7 @@ export function HeaderMenu({
             : item.url;
         return (
           <NavLink
-            className="header-menu-item"
+            className="header-menu-item justify-center"
             end
             key={item.id}
             onClick={close}
@@ -102,15 +152,6 @@ function HeaderCtas({
   return (
     <nav className="header-ctas" role="navigation">
       <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
-        <Suspense fallback="Sign in">
-          <Await resolve={isLoggedIn} errorElement="Sign in">
-            {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
-          </Await>
-        </Suspense>
-      </NavLink>
-      <SearchToggle />
-      <CartToggle cart={cart} />
     </nav>
   );
 }
@@ -131,7 +172,7 @@ function SearchToggle() {
   const {open} = useAside();
   return (
     <button className="reset" onClick={() => open('search')}>
-      Search
+      <FaSearch />
     </button>
   );
 }
@@ -154,7 +195,10 @@ function CartBadge({count}: {count: number | null}) {
         } as CartViewPayload);
       }}
     >
-      Cart {count === null ? <span>&nbsp;</span> : count}
+      <div className="row">
+        <FaShoppingCart />
+        {/* {count === null ? <span>&nbsp;</span> : count} */}
+      </div>
     </a>
   );
 }
